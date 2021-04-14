@@ -2,9 +2,7 @@
 
 #imports
 import pandas as pd
-import numpy as np
-import glob
-import os
+import re
 
 # Fill out this variables adequately
 schema_name = 'schema_name'
@@ -34,6 +32,9 @@ for i, col in enumerate(df.columns):
     if sql_type == "varchar":
         max_size = colnames_maxlenght_dict.get(col, 1024)
         sql_type = "varchar" + f"({max_size})"
+    flag = re.findall(r"\s", col)
+    if flag:
+        col = "\'" + col + "\'"
 
     colnames_types_sql_types[col] = sql_type
 
@@ -42,9 +43,6 @@ print(colnames_types_sql_types)
 
 columns_and_types_sql_query = ' '.join([" " +key+" " +values + " NULL, \n"
                                        for key,values in colnames_types_sql_types.items()])[:-3]
-
-
-
 
 
 
