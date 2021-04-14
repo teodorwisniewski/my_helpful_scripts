@@ -40,47 +40,20 @@ for i, col in enumerate(df.columns):
 print(colnames_types_sql_types)
 
 
+columns_and_types_sql_query = ' '.join([" " +key+" " +values + " NULL, \n"
+                                       for key,values in colnames_types_sql_types.items()])[:-3]
 
 
 
 
 
 
-f"""
+output_sql =  f"""
 CREATE TABLE {schema_name}.{table_name} (
-	rmpostcode varchar(8) NULL,
-	post_sector varchar(6) NULL,
-	eastings int4 NULL,
-	northings int4 NULL,
-	coa_code varchar(9) NULL,
-	lsoa varchar(9) NULL,
-	msoa_and_im varchar(9) NULL,
-	la_name varchar(50) NULL,
-	la_code varchar(50) NULL,
-	government_region varchar(15) NULL,
-	country varchar(8) NULL,
-	households float8 NULL,
-	population float8 NULL,
-	bus_sites_total float8 NULL,
-	premises float8 NULL,
-	exchange_name varchar(30) NULL,
-	in_cable_franchise_area varchar(1) NULL,
-	cable_postcode varchar(1) NULL,
-	broadband_tech_available int4 NULL,
-	nga_tech_offered_by_bt varchar(50) NULL,
-	nga_activation_date varchar(50) NULL,
-	alt_net_supplier_code int4 NULL,
-	alt_net_supplier_name varchar(16) NULL,
-	alt_net_tech_supplied varchar(4) NULL,
-	"CityFibre postcode passed" varchar(1) NULL,
-	source_of_cable_postcode_flag varchar(32) NULL,
-	virgin_rfog varchar(1) NULL,
-	virgin_gig1 varchar(1) NULL,
-	vm_activation_quarter float8 NULL,
-	vm_activation_year float8 NULL,
-	multiple_networks_code float8 NULL,
-	altnet_deployment_date varchar(18) NULL,
-	max_nga_speed float8 NULL
+	{columns_and_types_sql_query}
 );"""
+print(output_sql)
 
-print(df.columns)
+
+with open(f"create_{table_name}_table_sql_query.sql", "w") as sql_file:
+    sql_file.write(output_sql)
