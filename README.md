@@ -12,6 +12,7 @@ replace error-prone filenames with more computer friendly filenames. For instanc
 2. ```creating_sql_query_table_from_csv.py```: this script allows to create a sql query from csv file. 
    It uses pandas and numpy library. It recognizes correct datatype for each column.
 
-
+3. ```load_data_to_pandas_from_postgres_database.py``` it allows to load data from a postgres table to a pandas dataframe.
+For this script psycopg2 library needs to be installed.
 ## Author
 Teodor Wisniewski
