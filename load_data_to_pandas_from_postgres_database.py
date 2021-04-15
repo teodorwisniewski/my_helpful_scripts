@@ -27,8 +27,8 @@ def display_as_table(data, headers):
 
 print( "Using psycopg2:" )
 
-myConnection = psycopg2.connect( host=hostname, user=username, password=password, dbname=database )
-df = do_query( myConnection, schema_name + '.' + table_name)
+my_connection = psycopg2.connect( host=hostname, user=username, password=password, dbname=database )
+df = do_query( my_connection, schema_name + '.' + table_name)
 print(df.head())
-myConnection.close()
+my_connection.close()
 
