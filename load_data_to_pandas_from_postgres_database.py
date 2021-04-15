@@ -3,7 +3,7 @@ import pandas as pd
 import psycopg2
 
 
-# List of variables that have to be defined by users
+# List of variables that have to be defined by users of this script.
 hostname = os.environ.get('HOST_POSTGRES')
 username = os.environ.get('DB_USER')
 password = os.environ.get('DB_PASS') #
