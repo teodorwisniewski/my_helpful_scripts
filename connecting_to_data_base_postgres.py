@@ -1,23 +1,34 @@
 import os
+import pandas as pd
+import psycopg2
 
-hostname = 'localhost'
-username = 'postgres' #os.environ.get('DB_USER')
-password = os.environ.get('DB_PASS_LOCAL') #
-database = 'analysis'
+
+# List of variables that have to be defined by users
+hostname = os.environ.get('HOST_POSTGRES')
+username = os.environ.get('DB_USER')
+password = os.environ.get('DB_PASS') #
+database = os.environ.get('DATABASE_NAME_POSTGRES')
+schema_name = 'schema_name'
+table_name =  'table_name'
+
 
 # Simple routine to run a query on a database and print the results:
-def doQuery( conn ) :
+def do_query(conn, table_name) :
     cur = conn.cursor()
+    cur.execute( f"SELECT * FROM {table_name}" )
+    query_output_df = display_as_table(cur.fetchall(), cur.description)
+    return query_output_df
 
-    cur.execute( "SELECT * FROM example LIMIT 5" )
 
-    for row in cur.fetchall() :
-        print( row )
+def display_as_table(data, headers):
+    df = pd.DataFrame(data=data, columns=[i[0] for i in headers])
+    return df
 
 
 print( "Using psycopg2:" )
-import psycopg2
+
 myConnection = psycopg2.connect( host=hostname, user=username, password=password, dbname=database )
-doQuery( myConnection )
+df = do_query( myConnection, schema_name + '.' + table_name)
+print(df.head())
 myConnection.close()
 
