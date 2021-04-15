@@ -3,3 +3,4 @@
 /venv/
 *.csv
 *.sql
+create_table_name_table_sql_query.sql
