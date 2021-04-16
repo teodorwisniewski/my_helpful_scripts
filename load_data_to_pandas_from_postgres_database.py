@@ -8,8 +8,8 @@ hostname = os.environ.get('HOST_POSTGRES')
 username = os.environ.get('DB_USER')
 password = os.environ.get('DB_PASS') #
 database = os.environ.get('DATABASE_NAME_POSTGRES')
-schema_name = 'schema_name'
-table_name =  'table_name'
+schema_name = 'winh2101'
+table_name =  'wind_cos'
 
 
 # Simple routine to run a query on a database and print the results:
@@ -28,7 +28,7 @@ def display_as_table(data, headers):
 print( "Using psycopg2:" )
 
 my_connection = psycopg2.connect( host=hostname, user=username, password=password, dbname=database )
-df = do_query( my_connection, schema_name + '.' + table_name)
+with my_connection as conn:
+    df = do_query( my_connection, schema_name + '.' + table_name)
 print(df.head())
-my_connection.close()
 
