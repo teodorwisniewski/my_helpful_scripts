@@ -8,8 +8,8 @@ hostname = os.environ.get('HOST_POSTGRES')
 username = os.environ.get('DB_USER')
 password = os.environ.get('DB_PASS') #
 database = os.environ.get('DATABASE_NAME_POSTGRES')
-schema_name = 'winh2101'
-table_name =  'wind_cos'
+schema_name = 'schema_name'
+table_name =  'table_name'
 
 
 # Simple routine to run a query on a database and print the results:
