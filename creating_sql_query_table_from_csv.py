@@ -20,8 +20,8 @@ for i, c in enumerate(df.columns):
 
 translating_dtypes_to_sqldatatypes = {
         'object': 'varchar',
-        'float64': 'NUMERIC',
-        'int64': 'NUMERIC',
+        'float64': 'float8', # 15 decimal digits precision
+        'int64': 'int8',
 }
 
 
