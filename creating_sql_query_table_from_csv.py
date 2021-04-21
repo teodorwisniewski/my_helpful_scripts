@@ -3,12 +3,12 @@
 #imports
 import pandas as pd
 import re
-
+from removing_forbidden_characters_from_filenames import removing_unwanted_characters
 
 # Fill out this variables adequately
-schema_name = 'schema_name'
-table_name = 'table_name'
-csv_filename = 'file_name.csv'
+schema_name = 'public'
+table_name = 'happiness2021'
+csv_filename = 'world_happiness_report_2021.csv'
 
 df = pd.read_csv(csv_filename)
 colnames_maxlenght_dict = {}
@@ -56,6 +56,8 @@ for i, col in enumerate(df.columns):
         if geom_type := detecting_geometry_object(data_point):
             sql_type = f"geometry({geom_type}, 4326)"
 
+    # rowing unwanted character and lowering column names
+    col = removing_unwanted_characters(col, all_dots=True).lower()
     flag = re.findall(r"[^a-zA-Z0-9\_]", col)
     if flag:
         col = '\"' + col + '\"'
