@@ -17,7 +17,7 @@ def removing_unwanted_characters(text:str, all_dots: bool = True) -> str:
     if flag:
         text =  re.sub('[^a-zA-Z0-9\.\_]', '_', text)
 
-        if all:
+        if all_dots:
             text = text.replace('.', '', text.count('.'))
         else:
             # replaces all dots except the last one
@@ -28,7 +28,7 @@ def removing_unwanted_characters(text:str, all_dots: bool = True) -> str:
 
 print(f"Starting the script {script_name}")
 for filename in glob.glob('*.*'):
-    new_file_name =  removing_unwanted_characters(filename, all=False)
+    new_file_name =  removing_unwanted_characters(filename, all_dots=False)
     if filename != new_file_name:
         os.rename(filename,new_file_name)
         print(f"I have just renamed a file from  called {filename} to {new_file_name}")
