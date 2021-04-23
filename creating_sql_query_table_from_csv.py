@@ -82,13 +82,15 @@ def df_column_types_to_sql_datatypes(df_to_process: pd.DataFrame) -> dict:
         if sql_type == "varchar": sql_type = define_varchar_sql_type(df_to_process,colnames_maxlenght_dict,col)
         col = formatting_output_sql_column_name(col)
         colnames_types_sql_types[col] = sql_type
+
     return colnames_types_sql_types
 
 
 def turn_csv_into_sql_table(csv_filename:str, schema_name:str, table_name:str,
                             save_to_file: bool = True,
                             drop_table_if_exists: bool = True,
-                            clean_special_characters_in_sql:bool =True) -> list:
+                            clean_special_characters_in_sql:bool =True,
+                            save_to_csv_df_copy: bool = True) -> list:
     """
 
     :param clean_special_characters_in_sql: removes "\n" and "\t" from output string
@@ -97,6 +99,7 @@ def turn_csv_into_sql_table(csv_filename:str, schema_name:str, table_name:str,
     :param csv_filename: contains path to the csv file based on which we want to create a sql table
     :param schema_name: the name of schema in our postgres database
     :param table_name: the name of a table in the postgres database
+    :param save_to_csv_df_copy: it allows to save a csv copy of dataframe with properly formatted columns
     :return: it returns a string with a new sql query that enables to create a table. For instance:
 
     CREATE TABLE public.happiness2021 (
@@ -120,6 +123,11 @@ def turn_csv_into_sql_table(csv_filename:str, schema_name:str, table_name:str,
 
     drop_table_sql = f"DROP TABLE IF EXISTS {schema_name}.{table_name}; \n"
     print(drop_table_sql + output_sql)
+
+    if save_to_csv_df_copy:
+        new_col_names = [formatting_output_sql_column_name(col) for col in df.columns]
+        df_to_process = df.rename(columns=dict(zip(df.columns, new_col_names)))
+        df_to_process.to_csv(csv_filename, index=False)
 
     if save_to_file:
         with open(f"create_{table_name}_table_sql_query.sql", "w") as sql_file:
@@ -147,7 +155,7 @@ def turn_csv_into_sql_table(csv_filename:str, schema_name:str, table_name:str,
 if __name__ == "__main__":
     # Fill out this variables adequately
     schema_name = 'public'
-    table_name = 'meets'
-    csv_filename = 'meets.csv'
+    table_name = 'file_name'
+    csv_filename = 'file_name.csv'
     out_str = turn_csv_into_sql_table(csv_filename, schema_name, table_name)
     print(out_str)
