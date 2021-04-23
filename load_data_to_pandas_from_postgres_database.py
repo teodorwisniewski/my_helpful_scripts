@@ -35,7 +35,7 @@ def read_sql_table_to_df(connection:psycopg2.extensions.connection,
     """
 
     with connection as conn:
-        df = do_query( my_connection, schema_name + '.' + table_name)
+        df = do_query( connection, schema_name + '.' + table_name)
     return df
 
 
