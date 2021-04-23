@@ -3,17 +3,25 @@ import pandas as pd
 import psycopg2
 
 
-# Simple routine to run a query on a database and print the results:
-def do_query(conn, table_name) :
+def do_query(conn:psycopg2.extensions.connection, table_name:str) -> pd.DataFrame:
     cur = conn.cursor()
     cur.execute( f"SELECT * FROM {table_name}" )
-    query_output_df = display_as_table(cur.fetchall(), cur.description)
+    query_output_df = get_df_from_sql_table(cur)
     return query_output_df
 
 
-def display_as_table(data, headers):
-    df = pd.DataFrame(data=data, columns=[i[0] for i in headers])
-    return df
+def get_df_from_sql_table(cursor: psycopg2.extensions.cursor) -> pd.DataFrame:
+    """
+    this function function takes the cursor object and
+    adapt its output to the dataframe object
+    :param data: cursor
+    :param headers: cursor
+    :return:
+    """
+    data = cursor.fetchall()
+    headers= cursor.description
+    df_from_sql = pd.DataFrame(data=data, columns=[i[0] for i in headers])
+    return df_from_sql
 
 
 def read_sql_table_to_df(connection:psycopg2.extensions.connection,
@@ -29,6 +37,12 @@ def read_sql_table_to_df(connection:psycopg2.extensions.connection,
     with connection as conn:
         df = do_query( my_connection, schema_name + '.' + table_name)
     return df
+
+
+
+
+
+
 
 
 if __name__ == "__main__":
