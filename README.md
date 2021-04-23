@@ -15,8 +15,8 @@ replace error-prone filenames with more computer friendly filenames. For instanc
 3. ```load_data_to_pandas_from_postgres_database.py``` it allows to load data from a postgres table to a pandas dataframe.
 For this script psycopg2 library needs to be installed.
 
-4. ```load_csv_to_postgres_database.py``` it allows to load data a csv file to a table in the postgres database.
-For this script psycopg2 library needs to be installed.
+4. ```load_csv_to_postgres_database.py``` it allows to load data from a csv file to a table in the postgres database.
+For this script psycopg2, pandas and numpy libraries need to be installed.
 
 ## Author
 Teodor Wisniewski
