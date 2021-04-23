@@ -3,15 +3,6 @@ import pandas as pd
 import psycopg2
 
 
-# List of variables that have to be defined by users of this script.
-hostname = os.environ.get('HOST_POSTGRES')
-username = os.environ.get('DB_USER')
-password = os.environ.get('DB_PASS') #
-database = os.environ.get('DATABASE_NAME_POSTGRES')
-schema_name = 'schema_name'
-table_name =  'table_name'
-
-
 # Simple routine to run a query on a database and print the results:
 def do_query(conn, table_name) :
     cur = conn.cursor()
@@ -25,10 +16,29 @@ def display_as_table(data, headers):
     return df
 
 
-print( "Using psycopg2:" )
+def read_sql_table_to_df(connection:psycopg2.extensions.connection,
+                         schema_name:str,
+                         table_name:str) -> pd.DataFrame:
+    """
+    :param connection: psycopg2 connection
+    :param schema_name: schema name in the postgres database
+    :param table_name: table name  in the postgres database
+    :return:
+    """
 
-my_connection = psycopg2.connect( host=hostname, user=username, password=password, dbname=database )
-with my_connection as conn:
-    df = do_query( my_connection, schema_name + '.' + table_name)
-print(df.head())
+    with connection as conn:
+        df = do_query( my_connection, schema_name + '.' + table_name)
+    return df
 
+
+if __name__ == "__main__":
+    # List of variables that have to be defined by users of this script.
+    hostname = os.environ.get('HOST_POSTGRES')
+    username = os.environ.get('DB_USER')
+    password = os.environ.get('DB_PASS')  #
+    database = os.environ.get('DATABASE_NAME_POSTGRES')
+    schema_name = 'public'
+    table_name = 'happiness2021'
+    my_connection = psycopg2.connect(host=hostname, user=username, password=password, dbname=database)
+    df = read_sql_table_to_df(my_connection, schema_name, table_name)
+    print(df.head())
