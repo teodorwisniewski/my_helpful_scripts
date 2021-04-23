@@ -12,13 +12,13 @@ from creating_sql_query_table_from_csv import turn_csv_into_sql_table
 from load_data_to_pandas_from_postgres_database import read_sql_table_to_df
 
 
-csv_file_name = 'meets.csv'
+csv_file_name = 'updated_sample_submission.csv'
 hostname = os.environ.get('HOST_POSTGRES')
 username = os.environ.get('DB_USER')
 password = os.environ.get('DB_PASS') #
 database = os.environ.get('DATABASE_NAME_POSTGRES')
 schema_name = 'public'
-table_name = 'meets'
+table_name = 'updated_sample_submission'
 
 conn = psycopg2.connect( host=hostname, user=username, password=password, dbname=database )
 df = pd.read_csv(csv_file_name)
@@ -34,6 +34,10 @@ with conn as conn_create_empy_table:
 df = read_sql_table_to_df(conn, schema_name, table_name)
 print(df.head())
 
+
+# TODO: the algoritm that reads a csv file should be more robust. Please look
+# TODO: at python morsels tasks to improve it. And test it on
+# test it updated_sample_submission.csv' file, which is particularly difficult
 with conn as conn_populate_a_table:
     cur = conn_populate_a_table.cursor()
     with open(csv_file_name, 'r') as file:
