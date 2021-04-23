@@ -34,13 +34,40 @@ def get_object_columns_max_lenght(df_to_check: pd.DataFrame) -> dict:
     return colnames_maxlenght_dict
 
 
-def df_column_types_to_sql_datatypes(df_to_precess: pd.DataFrame) -> dict:
+def formatting_output_sql_column_name(colname:str) ->str:
+    # rowing unwanted character and lowering column names
+    colname = removing_unwanted_characters(colname, all_dots=True).lower()
+    flag = re.findall(r"[^a-zA-Z0-9\_]", colname)
+    if flag:
+        colname = '\"' + colname + '\"'
+    return colname
+
+
+def define_varchar_sql_type(df_to_process: pd.DataFrame,
+                            colnames_maxlenght_dict: dict,
+                            colname:str):
+    max_size = colnames_maxlenght_dict.get(colname, 1024)
+    sql_type = "varchar" + f"({max_size})"
+    data_point = df_to_process[colname].iloc[0]
+    if geom_type := detecting_geometry_object(data_point):
+        sql_type = f"geometry({geom_type}, 4326)"
+    return sql_type
+
+
+def df_column_types_to_sql_datatypes(df_to_process: pd.DataFrame) -> dict:
     """
     This function takes as an input a dataframe object and return a dict
     with column names and corresponding datatypes in sql
-    :param df_to_precess: pandas.Dataframe object th
+    :param df_to_process: pandas.Dataframe object th
     :return: a dict for instance:
-    {'meetid': 'int8', 'meetpath': 'varchar(47)', 'federation': 'varchar(14)', 'date': 'varchar(10)', 'meetcountry': 'varchar(17)', 'meetstate': 'varchar(3)', 'meettown': 'varchar(49)', 'meetname': 'varchar(156)'}
+    colnames_types_sql_types= {'meetid': 'int8',
+    'meetpath': 'varchar(47)',
+    'federation': 'varchar(14)',
+    'date': 'varchar(10)',
+    'meetcountry': 'varchar(17)',
+    'meetstate': 'varchar(3)',
+    'meettown': 'varchar(49)',
+     'meetname': 'varchar(156)'}
 
     """
     translating_dtypes_to_sqldatatypes = {
@@ -48,26 +75,13 @@ def df_column_types_to_sql_datatypes(df_to_precess: pd.DataFrame) -> dict:
             'float64': 'float8', # 15 decimal digits precision
             'int64': 'int8',
     }
-    colnames_maxlenght_dict = get_object_columns_max_lenght(df_to_precess)
+    colnames_maxlenght_dict = get_object_columns_max_lenght(df_to_process)
     colnames_types_sql_types = {}
-    for i, col in enumerate(df_to_precess.columns):
-
-        columntype = str(df_to_precess[col].dtype)
+    for i, col in enumerate(df_to_process.columns):
+        columntype = str(df_to_process[col].dtype)
         sql_type = translating_dtypes_to_sqldatatypes.get(columntype, "varchar")
-
-        if sql_type == "varchar":
-            max_size = colnames_maxlenght_dict.get(col, 1024)
-            sql_type = "varchar" + f"({max_size})"
-            data_point = df_to_precess[col].iloc[0]
-            if geom_type := detecting_geometry_object(data_point):
-                sql_type = f"geometry({geom_type}, 4326)"
-
-        # rowing unwanted character and lowering column names
-        col = removing_unwanted_characters(col, all_dots=True).lower()
-        flag = re.findall(r"[^a-zA-Z0-9\_]", col)
-        if flag:
-            col = '\"' + col + '\"'
-
+        if sql_type == "varchar": sql_type = define_varchar_sql_type(df_to_process,colnames_maxlenght_dict,col)
+        col = formatting_output_sql_column_name(col)
         colnames_types_sql_types[col] = sql_type
     return colnames_types_sql_types
 
@@ -94,21 +108,25 @@ def csv_to_create_sql_table(csv_filename:str, schema_name:str, table_name:str,
     );
 
     """
-
     df = pd.read_csv(csv_filename)
     colnames_types_sql_types = df_column_types_to_sql_datatypes(df)
     columns_and_types_sql_query = ''.join(["\t\t\t" +key+" " +values + " NULL, \n"
                                            for key,values in colnames_types_sql_types.items()])[:-3]
 
-    output_sql =f"""
-    CREATE TABLE {schema_name}.{table_name} (
-    {columns_and_types_sql_query}
-    );"""
+    output_sql =f"""CREATE TABLE {schema_name}.{table_name} (
+    {columns_and_types_sql_query});"""
 
     if save_to_file:
         with open(f"create_{table_name}_table_sql_query.sql", "w") as sql_file:
             sql_file.write(output_sql)
     return output_sql
+
+
+
+
+
+
+
 
 
 
