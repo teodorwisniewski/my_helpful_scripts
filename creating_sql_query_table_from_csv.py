@@ -88,7 +88,7 @@ def df_column_types_to_sql_datatypes(df_to_process: pd.DataFrame) -> dict:
 def turn_csv_into_sql_table(csv_filename:str, schema_name:str, table_name:str,
                             save_to_file: bool = True,
                             drop_table_if_exists: bool = True,
-                            clean_special_characters_in_sql:bool =True) -> str:
+                            clean_special_characters_in_sql:bool =True) -> list:
     """
 
     :param clean_special_characters_in_sql: removes "\n" and "\t" from output string
@@ -115,17 +115,27 @@ def turn_csv_into_sql_table(csv_filename:str, schema_name:str, table_name:str,
     colnames_types_sql_types = df_column_types_to_sql_datatypes(df)
     columns_and_types_sql_query = ''.join(["\t\t\t" +key+" " +values + " NULL, \n"
                                            for key,values in colnames_types_sql_types.items()])[:-3]
-
     output_sql =f"""CREATE TABLE {schema_name}.{table_name} (
     {columns_and_types_sql_query});"""
-    drop_table_sql = f"DROP TABLE IF EXISTS {schema_name}.{table_name} \n"
-    if drop_table_if_exists: output_sql = drop_table_sql + output_sql
+
+    drop_table_sql = f"DROP TABLE IF EXISTS {schema_name}.{table_name}; \n"
+    print(drop_table_sql + output_sql)
+
     if save_to_file:
         with open(f"create_{table_name}_table_sql_query.sql", "w") as sql_file:
-            sql_file.write(output_sql)
-    print(output_sql)
-    if clean_special_characters_in_sql: output_sql = output_sql.replace("\n", " ").replace("\t", "    ")
-    return output_sql
+            sql_file.write(drop_table_sql + output_sql)
+
+    if clean_special_characters_in_sql:
+        drop_table_sql = drop_table_sql.replace("\n", " ").replace("\t", "    ")
+        output_sql = output_sql.replace("\n", " ").replace("\t", "    ")
+
+    if drop_table_if_exists:
+        output_table = [drop_table_sql]
+    else:
+        output_table = []
+    output_table.append(output_sql)
+
+    return output_table
 
 
 
