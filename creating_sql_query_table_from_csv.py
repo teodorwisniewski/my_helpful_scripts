@@ -38,7 +38,28 @@ def get_object_columns_max_lenght(df_to_check: pd.DataFrame) -> dict:
     return colnames_maxlenght_dict
 
 
-def csv_to_create_sql_table(csv_filename:str, schema_name:str, table_name:str) -> str:
+def csv_to_create_sql_table(csv_filename:str, schema_name:str, table_name:str,
+                            save_to_file = True) -> str:
+    """
+
+    :param save_to_file: True if want to save an sql query in a sql file
+    :param csv_filename: contains path to the csv file based on which we want to create a sql table
+    :param schema_name: the name of schema in our postgres database
+    :param table_name: the name of a table in the postgres database
+    :return: it returns a string with a new sql query that enables to create a table. For instance:
+
+    CREATE TABLE public.happiness2021 (
+                meetid int8 NULL,
+                meetpath varchar(47) NULL,
+                federation varchar(14) NULL,
+                date varchar(10) NULL,
+                meetcountry varchar(17) NULL,
+                meetstate varchar(3) NULL,
+                meettown varchar(49) NULL,
+                meetname varchar(156) NULL
+    );
+
+    """
 
     df = pd.read_csv(csv_filename)
 
@@ -56,7 +77,6 @@ def csv_to_create_sql_table(csv_filename:str, schema_name:str, table_name:str) -
         sql_type = translating_dtypes_to_sqldatatypes.get(columntype, "varchar")
 
         if sql_type == "varchar":
-
             max_size = colnames_maxlenght_dict.get(col, 1024)
             sql_type = "varchar" + f"({max_size})"
             data_point = df[col].iloc[0]
@@ -80,10 +100,9 @@ def csv_to_create_sql_table(csv_filename:str, schema_name:str, table_name:str) -
     {columns_and_types_sql_query}
     );"""
 
-
-
-    with open(f"create_{table_name}_table_sql_query.sql", "w") as sql_file:
-        sql_file.write(output_sql)
+    if save_to_file:
+        with open(f"create_{table_name}_table_sql_query.sql", "w") as sql_file:
+            sql_file.write(output_sql)
     return output_sql
 
 
