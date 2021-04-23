@@ -86,7 +86,7 @@ def df_column_types_to_sql_datatypes(df_to_process: pd.DataFrame) -> dict:
     return colnames_types_sql_types
 
 
-def csv_to_create_sql_table(csv_filename:str, schema_name:str, table_name:str,
+def turn_csv_into_sql_table(csv_filename:str, schema_name:str, table_name:str,
                             save_to_file = True) -> str:
     """
 
@@ -120,9 +120,6 @@ def csv_to_create_sql_table(csv_filename:str, schema_name:str, table_name:str,
         with open(f"create_{table_name}_table_sql_query.sql", "w") as sql_file:
             sql_file.write(output_sql)
     return output_sql
-
-
-
 
 
 
