@@ -3,9 +3,11 @@ import pandas as pd
 import psycopg2
 
 
-def do_query(conn:psycopg2.extensions.connection, table_name:str) -> pd.DataFrame:
+def do_query(conn:psycopg2.extensions.connection,
+             schema_name:str,
+             table_name:str) -> pd.DataFrame:
     cur = conn.cursor()
-    cur.execute( f"SELECT * FROM {table_name}" )
+    cur.execute( f"SELECT * FROM {schema_name}.{table_name}" )
     query_output_df = get_df_from_sql_table(cur)
     return query_output_df
 
@@ -35,7 +37,7 @@ def read_sql_table_to_df(connection:psycopg2.extensions.connection,
     """
 
     with connection as conn:
-        df = do_query( connection, schema_name + '.' + table_name)
+        df = do_query( connection, schema_name , table_name)
     return df
 
 
