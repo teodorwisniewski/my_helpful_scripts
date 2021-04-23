@@ -5,24 +5,9 @@ import pandas as pd
 import re
 from removing_forbidden_characters_from_filenames import removing_unwanted_characters
 
-# Fill out this variables adequately
-schema_name = 'public'
-table_name = 'happiness2021'
-csv_filename = 'world_happiness_report_2021.csv'
 
-df = pd.read_csv(csv_filename)
-colnames_maxlenght_dict = {}
-for i, c in enumerate(df.columns):
-    if df[c].dtype == 'object':
-        max_lenght_str = df[c].str.len().max()
-        print('%s Max length of column %s: %s\n' %  (str(i+1),c, max_lenght_str))
-        colnames_maxlenght_dict[c] = int(max_lenght_str)
 
-translating_dtypes_to_sqldatatypes = {
-        'object': 'varchar',
-        'float64': 'float8', # 15 decimal digits precision
-        'int64': 'int8',
-}
+
 
 
 def detecting_geometry_object(cell_value: str) -> str:
@@ -42,46 +27,72 @@ def detecting_geometry_object(cell_value: str) -> str:
     return output_value
 
 
-colnames_types_sql_types = {}
-for i, col in enumerate(df.columns):
+def get_object_columns_max_lenght(df_to_check: pd.DataFrame) -> dict:
+    colnames_maxlenght_dict = {}
+    for i, c in enumerate(df_to_check.columns):
+        if df_to_check[c].dtype == 'object':
+            max_lenght_str = df_to_check[c].str.len().max()
+            print('%s Max length of column %s: %s\n' %  (str(i+1),c, max_lenght_str))
+            colnames_maxlenght_dict[c] = int(max_lenght_str)
 
-    columntype = str(df[col].dtype)
-    sql_type = translating_dtypes_to_sqldatatypes.get(columntype, "varchar")
-
-    if sql_type == "varchar":
-
-        max_size = colnames_maxlenght_dict.get(col, 1024)
-        sql_type = "varchar" + f"({max_size})"
-        data_point = df[col].iloc[0]
-        if geom_type := detecting_geometry_object(data_point):
-            sql_type = f"geometry({geom_type}, 4326)"
-
-    # rowing unwanted character and lowering column names
-    col = removing_unwanted_characters(col, all_dots=True).lower()
-    flag = re.findall(r"[^a-zA-Z0-9\_]", col)
-    if flag:
-        col = '\"' + col + '\"'
-
-    colnames_types_sql_types[col] = sql_type
-
-print(colnames_types_sql_types)
+    return colnames_maxlenght_dict
 
 
-columns_and_types_sql_query = ''.join(["\t\t\t" +key+" " +values + " NULL, \n"
-                                       for key,values in colnames_types_sql_types.items()])[:-3]
+def csv_to_create_sql_table(csv_filename:str, schema_name:str, table_name:str) -> str:
+
+    df = pd.read_csv(csv_filename)
+
+
+    translating_dtypes_to_sqldatatypes = {
+            'object': 'varchar',
+            'float64': 'float8', # 15 decimal digits precision
+            'int64': 'int8',
+    }
+    colnames_maxlenght_dict = get_object_columns_max_lenght(df)
+    colnames_types_sql_types = {}
+    for i, col in enumerate(df.columns):
+
+        columntype = str(df[col].dtype)
+        sql_type = translating_dtypes_to_sqldatatypes.get(columntype, "varchar")
+
+        if sql_type == "varchar":
+
+            max_size = colnames_maxlenght_dict.get(col, 1024)
+            sql_type = "varchar" + f"({max_size})"
+            data_point = df[col].iloc[0]
+            if geom_type := detecting_geometry_object(data_point):
+                sql_type = f"geometry({geom_type}, 4326)"
+
+        # rowing unwanted character and lowering column names
+        col = removing_unwanted_characters(col, all_dots=True).lower()
+        flag = re.findall(r"[^a-zA-Z0-9\_]", col)
+        if flag:
+            col = '\"' + col + '\"'
+
+        colnames_types_sql_types[col] = sql_type
+
+
+    columns_and_types_sql_query = ''.join(["\t\t\t" +key+" " +values + " NULL, \n"
+                                           for key,values in colnames_types_sql_types.items()])[:-3]
+
+    output_sql =f"""
+    CREATE TABLE {schema_name}.{table_name} (
+    {columns_and_types_sql_query}
+    );"""
 
 
 
-output_sql =f"""
-CREATE TABLE {schema_name}.{table_name} (
-{columns_and_types_sql_query}
-);"""
-print(output_sql)
-
-
-with open(f"create_{table_name}_table_sql_query.sql", "w") as sql_file:
-    sql_file.write(output_sql)
+    with open(f"create_{table_name}_table_sql_query.sql", "w") as sql_file:
+        sql_file.write(output_sql)
+    return output_sql
 
 
 
 
+if __name__ == "__main__":
+    # Fill out this variables adequately
+    schema_name = 'public'
+    table_name = 'meets'
+    csv_filename = 'meets.csv'
+    out_str = csv_to_create_sql_table(csv_filename, schema_name, table_name)
+    print(out_str)
