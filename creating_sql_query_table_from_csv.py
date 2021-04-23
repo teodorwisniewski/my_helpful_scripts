@@ -116,7 +116,8 @@ def turn_csv_into_sql_table(csv_filename:str, schema_name:str, table_name:str,
 
     output_sql =f"""CREATE TABLE {schema_name}.{table_name} (
     {columns_and_types_sql_query});"""
-
+    drop_table_sql = f"DROP TABLE IF EXISTS {schema_name}.{table_name} \n"
+    if drop_table_if_exists: output_sql = drop_table_sql + output_sql
     if save_to_file:
         with open(f"create_{table_name}_table_sql_query.sql", "w") as sql_file:
             sql_file.write(output_sql)
@@ -134,5 +135,5 @@ if __name__ == "__main__":
     schema_name = 'public'
     table_name = 'meets'
     csv_filename = 'meets.csv'
-    out_str = csv_to_create_sql_table(csv_filename, schema_name, table_name)
+    out_str = turn_csv_into_sql_table(csv_filename, schema_name, table_name)
     print(out_str)
