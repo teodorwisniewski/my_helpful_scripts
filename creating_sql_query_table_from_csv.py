@@ -28,7 +28,6 @@ def get_object_columns_max_lenght(df_to_check: pd.DataFrame) -> dict:
     for i, c in enumerate(df_to_check.columns):
         if df_to_check[c].dtype == 'object':
             max_lenght_str = df_to_check[c].str.len().max()
-            print('%s Max length of column %s: %s\n' %  (str(i+1),c, max_lenght_str))
             colnames_maxlenght_dict[c] = int(max_lenght_str)
 
     return colnames_maxlenght_dict
@@ -87,9 +86,11 @@ def df_column_types_to_sql_datatypes(df_to_process: pd.DataFrame) -> dict:
 
 
 def turn_csv_into_sql_table(csv_filename:str, schema_name:str, table_name:str,
-                            save_to_file = True) -> str:
+                            save_to_file: bool = True,
+                            drop_table_if_exists: bool = True) -> str:
     """
 
+    :param drop_table_if_exists: if True adds a line to the output sql query "DROP TABLE IF EXISTS schema.table"
     :param save_to_file: True if want to save an sql query in a sql file
     :param csv_filename: contains path to the csv file based on which we want to create a sql table
     :param schema_name: the name of schema in our postgres database
