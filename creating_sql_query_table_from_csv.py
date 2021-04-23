@@ -87,9 +87,11 @@ def df_column_types_to_sql_datatypes(df_to_process: pd.DataFrame) -> dict:
 
 def turn_csv_into_sql_table(csv_filename:str, schema_name:str, table_name:str,
                             save_to_file: bool = True,
-                            drop_table_if_exists: bool = True) -> str:
+                            drop_table_if_exists: bool = True,
+                            clean_special_characters_in_sql:bool =True) -> str:
     """
 
+    :param clean_special_characters_in_sql: removes "\n" and "\t" from output string
     :param drop_table_if_exists: if True adds a line to the output sql query "DROP TABLE IF EXISTS schema.table"
     :param save_to_file: True if want to save an sql query in a sql file
     :param csv_filename: contains path to the csv file based on which we want to create a sql table
@@ -121,6 +123,8 @@ def turn_csv_into_sql_table(csv_filename:str, schema_name:str, table_name:str,
     if save_to_file:
         with open(f"create_{table_name}_table_sql_query.sql", "w") as sql_file:
             sql_file.write(output_sql)
+    print(output_sql)
+    if clean_special_characters_in_sql: output_sql = output_sql.replace("\n", " ").replace("\t", "    ")
     return output_sql
 
 
