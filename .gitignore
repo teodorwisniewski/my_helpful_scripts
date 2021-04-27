@@ -3,4 +3,5 @@
 /venv/
 *.csv
 *.sql
+*.bat
 create_table_name_table_sql_query.sql
