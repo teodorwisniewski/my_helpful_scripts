@@ -1,7 +1,8 @@
 /.idea/
+/.idea/
 .idea
 /venv/
 *.csv
 *.sql
-*.bat
 create_table_name_table_sql_query.sql
+/.~lock.updated_sample_submission.csv#
