@@ -18,13 +18,11 @@ def check_connection(conn):
     return f"The connection to the db is {flag_str}"
 
 
-
-# TODO: make sure that the connection is closed at the end of
 csv_file_name = 'user_accounts.csv'
-hostname = os.environ.get('HOST_POSTGRES')
-username = os.environ.get('DB_USER')
-password = os.environ.get('DB_PASS') #
-database = os.environ.get('DATABASE_NAME_POSTGRES')
+hostname = 'localhost' #os.environ.get('HOST_POSTGRES')
+username = 'postgres' #os.environ.get('DB_USER')
+password = os.environ.get('DB_PASS_LOCAL') #os.environ.get('DB_PASS') #
+database = 'postgres'
 schema_name = 'public'
 table_name = 'users'
 
@@ -47,7 +45,7 @@ try:
     # TODO: the algoritm that reads a csv file should be more robust. Please look
     # TODO: at python morsels tasks to improve it. And test it on
 
-    # test it updated_sample_submission.csv' file, which is particularly difficult
+    # TODO: test it updated_sample_submission.csv' file, which is particularly difficult
     with conn as conn_populate_a_table:
         cur = conn_populate_a_table.cursor()
         with open(csv_file_name, 'r') as file:
