@@ -39,8 +39,8 @@ def print_psycopg2_exception(err):
 def clean_row(row: list):
 
     for index,val in enumerate(row):
-    if val == '':
-        row[index] = np.nan
+        if val == '':
+            row[index] = np.nan
 
     return row
 
