@@ -13,7 +13,7 @@ def removing_unwanted_characters(text:str, all_dots: bool = True) -> str:
     :param all_dots: it allows to decide whether or not we want to remove all dots or all dots except the last one
     :return: clean text without any special character
     """
-    flag = re.findall(r"[^a-zA-Z0-9\_]",filename)
+    flag = re.findall(r"[^a-zA-Z0-9\_]",text)
     if flag:
         text =  re.sub('[^a-zA-Z0-9\.\_]', '_', text)
 
@@ -25,12 +25,12 @@ def removing_unwanted_characters(text:str, all_dots: bool = True) -> str:
 
     return text
 
+if __name__ == "__main__":
+    print(f"Starting the script {script_name}")
+    for filename in glob.glob('*.*'):
+        new_file_name =  removing_unwanted_characters(filename, all_dots=False)
+        if filename != new_file_name:
+            os.rename(filename,new_file_name)
+            print(f"I have just renamed a file from  called {filename} to {new_file_name}")
 
-print(f"Starting the script {script_name}")
-for filename in glob.glob('*.*'):
-    new_file_name =  removing_unwanted_characters(filename, all_dots=False)
-    if filename != new_file_name:
-        os.rename(filename,new_file_name)
-        print(f"I have just renamed a file from  called {filename} to {new_file_name}")
-
-print(f"The end {script_name}")
+    print(f"The end {script_name}")
