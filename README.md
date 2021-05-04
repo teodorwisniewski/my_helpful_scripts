@@ -18,7 +18,7 @@ For this script psycopg2 library needs to be installed.
 4. ```load_csv_to_postgres_database.py``` it allows to load data from a csv file to a table in the postgres database.
 For this script psycopg2, pandas and numpy libraries need to be installed.
    
-5. ```csv_files_to_an_excel_file.py``` This scripts transforms several csv files into one excel file where all csv files 
+5. ```csv_files_to_an_excel_file.py``` This scripts transforms several csv files into one Excel file where all csv files 
 are in each of corresponding tabs.
    
 ## Usage
