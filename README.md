@@ -24,7 +24,7 @@ are in each of corresponding tabs.
 ## Usage
 Create and activate a new virtual environment. The scripts were tested with Python 3.8.
 Load dependencies required for the usage:
-> pip install -r requirements.txt`
+> pip install -r requirements.txt
 
 ## Author
 Teodor Wisniewski
