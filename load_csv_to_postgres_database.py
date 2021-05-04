@@ -14,6 +14,9 @@ from creating_sql_query_table_from_csv import turn_csv_into_sql_table
 from load_data_to_pandas_from_postgres_database import read_sql_table_to_df
 from removing_forbidden_characters_from_filenames import removing_unwanted_characters
 # TODO: Using the prepare sql statement to accelerate the sql query execution
+# TODO: the algoritm that reads a csv file should be more robust. Please look
+# TODO: at python morsels tasks to improve it. And test it on
+# TODO: test it updated_sample_submission.csv' file, which is particularly difficult
 
 
 # define a function that handles and parses psycopg2 exceptions
@@ -68,18 +71,13 @@ try:
 
     with conn as conn_create_empy_table:
         cur = conn_create_empy_table.cursor()
-        create_table_sql_query = turn_csv_into_sql_table(csv_file_name, schema_name, table_name, save_to_file=False)
+        create_table_sql_query = turn_csv_into_sql_table(csv_file_name, schema_name, table_name, save_to_file=True)
         for query in create_table_sql_query:
             cur.execute(query)
 
     df = read_sql_table_to_df(conn, schema_name, table_name)
     print(df.head())
 
-
-    # TODO: the algoritm that reads a csv file should be more robust. Please look
-    # TODO: at python morsels tasks to improve it. And test it on
-
-    # TODO: test it updated_sample_submission.csv' file, which is particularly difficult
 
     with conn as conn_populate_a_table:
         cur = conn_populate_a_table.cursor()
