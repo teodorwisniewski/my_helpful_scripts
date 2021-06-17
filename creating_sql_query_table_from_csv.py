@@ -127,6 +127,8 @@ def turn_csv_into_sql_table(csv_filename:str, schema_name:str, table_name:str,
     if save_to_csv_df_copy:
         new_col_names = [formatting_output_sql_column_name(col) for col in df.columns]
         df_to_process = df.rename(columns=dict(zip(df.columns, new_col_names)))
+        filename, format = csv_filename.split('.')
+        csv_filename = filename + "_copy." + format
         df_to_process.to_csv(csv_filename, index=False)
 
     if save_to_file:
